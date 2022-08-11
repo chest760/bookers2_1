@@ -45,6 +45,7 @@
 <%
 =end
 %>
+
 <%= render partial: 'users/template', locals: { user: @user, new_book: @new_book} %>
      <div class="col-md-8 offset-md-1">
         <h2>Book detail</h2>
@@ -54,16 +55,58 @@
           <tbody>
             <tr>
               <td><%=image_tag @user.get_profile_image(100,100)%><br><%= link_to @user.name, user_path(@user.id)%></td>
-              <td><%= link_to @book.title,book_path%></td>
+              <td><%= link_to @book.title%></td>
               <td><%= @book.body%></td>
+
               <% if @book.user == current_user %>
               <td><%= link_to "Edit",edit_book_path(@book.id),class:"btn btn-sm btn-success"%></td>
               <td><%= link_to "Destroy",book_path(@book.id),method: :delete,"data-confirm" => "本当に消しますか？", class:"btn btn-sm btn-danger"%></td>
               <%end%>
+
+              <%= render partial: 'favorites/favorite', locals: {book: @book} %>
+
+<%
+=begin
+%>
+              <td>
+              <% if @book.favorited_by?(current_user) %>
+                    <%= link_to book_favorites_path(@book), method: :delete do %>
+                     <i class="fas fa-heart" style = "color:red;"></i>
+                     <font color="red"><%= @book.favorites.count %></font>
+                    <% end %>
+                <% else %>
+                   <%= link_to book_favorites_path(@book), method: :post do %>
+                    <i class="fas fa-heart heart_blue"></i><%= @book.favorites.count %>
+                  <% end %>
+                <%end%>
+                </td>
+              <td>コメント数：<%= @book.book_comments.count %></td>
+  <%
+=end
+%>
             </tr>
           </tbody>
-
         </table>
+
+        <table>
+          <tbody>
+              <% @book.book_comments.each do |book_comment| %>
+              <tr>
+                <td><%=image_tag book_comment.user.get_profile_image(100,100)%><br><%= link_to book_comment.user.name, user_path(book_comment.user_id)%></td>
+                <td><%= book_comment.comment %></td>
+                <% if book_comment.user == current_user %>
+                  <td><%= link_to "Destroy",book_book_comment_path(book_comment.book,book_comment),method: :delete,"data-confirm" => "本当に消しますか？", class:"btn btn-sm btn-danger"%></td>
+                <%end%>
+              </tr>
+              <%end%>
+            </tbody>
+        </table>
+        <div>
+          <%= form_with model: [@book, @book_comment] do |f| %>
+            <%= f.text_area :comment, rows: '5', class: "form-control" %>
+            <%= f.submit "送信する" %>
+          <% end %>
+        </div>
 
      </div>
   </div>

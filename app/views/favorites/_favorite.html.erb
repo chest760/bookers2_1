@@ -1,0 +1,13 @@
+  <td>
+    <% if book.favorited_by?(current_user) %>
+      <%= link_to book_favorites_path(book), method: :delete do %>
+        <i class="fas fa-heart" style = "color:red;"></i>
+        <font color="red"><%= book.favorites.count %></font>
+      <% end %>
+    <% else %>
+      <%= link_to book_favorites_path(book), method: :post do %>
+        <i class="fas fa-heart heart_blue"></i><%= book.favorites.count %>
+      <% end %>
+    <%end%>
+  </td>
+  <td>コメント数：<%= book.book_comments.count %></td>
